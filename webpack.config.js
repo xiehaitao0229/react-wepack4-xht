@@ -54,7 +54,7 @@ module.exports = {
               },
             {
                 test: /\.js$/,
-                use: ['react-hot-loader','babel-loader'],
+                use: ['babel-loader'],
                 include: /src/,          // 只转化src目录下的js
                 exclude: /node_modules/  // 排除掉node_modules，优化打包速度
             },
@@ -115,7 +115,8 @@ module.exports = {
     resolve: {
         // 别名
         alias: {
-
+          pages:path.join(__dirname,'src/pages'),
+          component:path.join(__dirname,'src/component'),
         },
         // 省略后缀
         extensions: ['.js', '.jsx', '.json', '.css', '.scss', '.less']

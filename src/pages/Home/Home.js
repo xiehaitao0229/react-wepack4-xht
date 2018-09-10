@@ -19,7 +19,7 @@ export default class Home extends Component {
     const { count } = this.state;
     return (
       <div>
-        this is home~1111
+        this is home~123
         <br />
         当前计数：
         {count}
