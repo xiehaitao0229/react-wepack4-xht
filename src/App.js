@@ -1,15 +1,7 @@
-import React ,{Component} from 'react';
+import React, { Component } from 'react';
 
-export default class App extends Component{
-    sum(){
-
-    }
-
-
-    
-    render(){
-        return (
-            <div>12345123</div>
-        )
-    }
+export default class App extends Component {
+  render() {
+    return <div>12345123</div>;
+  }
 }

@@ -46,6 +46,13 @@ module.exports = {
     module: {
         rules: [
             {
+                enforce: "pre",
+                test: /\.js$/,
+                exclude: /node_modules/,
+                include:/src/,
+                loader: "eslint-loader",
+              },
+            {
                 test: /\.js$/,
                 use: 'babel-loader',
                 include: /src/,          // 只转化src目录下的js
