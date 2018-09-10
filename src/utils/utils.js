@@ -5,4 +5,3 @@ export const sum = (a,b)=>{
 export const sum1 = (a,b)=>{
     return a+b;
 }
-
