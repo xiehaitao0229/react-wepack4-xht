@@ -4,13 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "precommit": "lint",
+    "precommit": "npm run lint",
     "dev": "cross-env webpack-dev-server --mode development",
     "build": "npm run lint && cross-env npm run clean && webpack --mode production",
     "clean": "cross-env rm -rf dist && mkdir dist",
     "test": "mocha --compilers js:babel-register --require ./test/test_helper.js --recursive",
     "test:watch": "npm run test --watch",
-    "lint": "npm run format && eslint --ext .js src",
+    "lint": "npm run format && npm run fix &&  eslint --ext .js src",
     "fix": "npm run format && eslint --fix --ext .js src",
     "format": "prettier --single-quote --trailing-comma es5 --write \"src/**/*.js\""
   },
