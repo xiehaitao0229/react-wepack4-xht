@@ -9,5 +9,6 @@
         ],
         "es2015",
         "react"
-    ]
+    ],
+    "plugins": ["react-hot-loader/babel"]
 }

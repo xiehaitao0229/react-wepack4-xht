@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "precommit": "npm run lint",
-    "dev": "cross-env webpack-dev-server --mode development",
+    "dev": "npm run fix && cross-env webpack-dev-server --mode development",
     "build": "npm run lint && cross-env npm run clean && webpack --mode production",
     "clean": "cross-env rm -rf dist && mkdir dist",
     "test": "mocha --compilers js:babel-register --require ./test/test_helper.js --recursive",
@@ -58,6 +58,7 @@
     "nprogress": "^0.2.0",
     "postcss-loader": "^3.0.0",
     "prettier": "^1.14.2",
+    "react-hot-loader": "^4.3.6",
     "sass-loader": "^6.0.7",
     "sinon": "^6.2.0",
     "style-loader": "^0.20.2",
