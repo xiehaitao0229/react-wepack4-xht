@@ -106,11 +106,17 @@ module.exports = {
     },
     plugins: plu,
     devServer: {
-        contentBase: './dist',
         host: 'localhost',      // 默认是localhost
         port: 3000,             // 端口
         open: true,             // 自动打开浏览器
-        hot: true               // 开启热更新
+        hot: true,               // 开启热更新
+        proxy: {
+          '/api': {
+            target: 'http://localhost:3000/mock',
+            secure: false,
+            changeOrigin: true,
+          }
+        }
     },
     resolve: {
         // 别名

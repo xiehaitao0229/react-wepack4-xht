@@ -1,8 +1,8 @@
 /* action */
 
-export const INCREMENT = 'couter/INCREMENT';
-export const DECREMENT = 'couter/DECREMENT';
-export const RESET = 'couter/RESET';
+export const INCREMENT = 'INCREMENT';
+export const DECREMENT = 'DECREMENT';
+export const RESET = 'RESET';
 
 export function increment() {
   return {

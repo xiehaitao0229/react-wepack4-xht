@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { increment, decrement, reset } from 'actions/couters';
+import { increment as _increment, decrement as _decrement, reset as _reset } from 'actions/couters';
 
 import { connect } from 'react-redux';
 
@@ -7,13 +7,20 @@ class Counter extends Component {
   render() {
     const {
       counter: { count },
+      increment,
+      decrement,
+      reset,
     } = this.props;
+    console.log(this.props);
     return (
       <div>
-        <div>当前计数为:{count}</div>
-        <button onClick={() => this.props.increment()}>自增</button>
-        <button onClick={() => this.props.decrement()}>自减</button>
-        <button onClick={() => this.props.reset()}>重置</button>
+        <div>
+          当前计数为:
+          {count}
+        </div>
+        <button onClick={() => increment()}>自增</button>
+        <button onClick={() => decrement()}>自减</button>
+        <button onClick={() => reset()}>重置</button>
       </div>
     );
   }
@@ -28,13 +35,13 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     increment: () => {
-      dispatch(increment());
+      dispatch(_increment());
     },
     decrement: () => {
-      dispatch(decrement());
+      dispatch(_decrement());
     },
     reset: () => {
-      dispatch(reset());
+      dispatch(_reset());
     },
   };
 };
