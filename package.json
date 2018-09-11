@@ -1,12 +1,17 @@
 {
   "name": "react-cli-xht",
   "version": "1.0.0",
-  "description": "",
+  "description": "react-webpack4-cli_v1.0",
+  "keywords":"react webpack4 cli",
+  "author":"xiehaitao",
   "main": "index.js",
+  "bin": {
+    "xhtcli": "bin/cli.js"
+  },
   "scripts": {
-    "precommit": "npm run lint",
     "dev": "cross-env webpack-dev-server --mode development",
     "build": "npm run lint && cross-env npm run clean && webpack --mode production",
+    "precommit": "npm run lint",
     "clean": "cross-env rm -rf dist && mkdir dist",
     "test": "mocha --compilers js:babel-register --require ./test/test_helper.js --recursive",
     "test:watch": "npm run test --watch",
@@ -19,6 +24,7 @@
   "license": "ISC",
   "devDependencies": {
     "antd": "^3.6.6",
+    "archive-tool": "^1.0.0",
     "autoprefixer": "^9.1.5",
     "axios": "^0.18.0",
     "babel-core": "^6.26.3",
@@ -32,7 +38,9 @@
     "babel-preset-stage-3": "^6.24.1",
     "babel-register": "^6.26.0",
     "chai": "^4.1.2",
+    "chalk": "^2.4.1",
     "clean-webpack-plugin": "^0.1.19",
+    "commander": "^2.18.0",
     "cross-env": "^5.1.4",
     "css-loader": "^0.28.10",
     "eslint": "^5.5.0",
