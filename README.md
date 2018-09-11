@@ -45,11 +45,14 @@ module.exports = {
 }
 ```
 上面就可以说是实现了最简单的webpack配置了，那接下来就打包一下看看
+
 ![image.png](https://upload-images.jianshu.io/upload_images/6264932-f94323b9ed1a5943.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ##  配置执行文件
 工作当中我们打包编译的时候一般都执行npm run dev这样的命令，既然是通过npm执行的命令，我们就应该找到package.json里的执行脚本去配置一下命令，这里如下图所示
+
 ![image.png](https://upload-images.jianshu.io/upload_images/6264932-86f7ff423fdbb03b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
 npm run build就是我们打包后的文件，这是生产环境下，上线需要的文件
 
 npm run dev是我们开发环境下打包的文件，当然由于devServer帮我们把文件放到内存中了，所以并不会输出打包后的dist文件夹
@@ -303,6 +306,7 @@ module.exports = {
 }
 ```
 在css中指定了publicPath路径这样就可以根据相对路径引用到图片资源了，如下图所示
+
 ![image.png](https://upload-images.jianshu.io/upload_images/6264932-1bae64ee1ba78a33.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ## 页面img引用图片
