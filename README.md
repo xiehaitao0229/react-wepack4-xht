@@ -29,6 +29,7 @@ module.exports = {
 npm i webpack-dev-server -D
 ```
 ![image.png](https://upload-images.jianshu.io/upload_images/6264932-f51b36d7a734a253.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
 接下来我们按照项目的结构，我们就从0开始去写一下配置
 ```
 // webpack.config.js
