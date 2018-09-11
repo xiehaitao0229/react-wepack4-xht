@@ -119,7 +119,6 @@ module.exports = {
           component:path.join(__dirname,'src/component'),
           actions:path.join(__dirname,'src/redux/actions'),
           reducers:path.join(__dirname,'src/redux/reducers'),
-          redux:path.join(__dirname,'src/redux'),
         },
         // 省略后缀
         extensions: ['.js', '.jsx', '.json', '.css', '.scss', '.less']

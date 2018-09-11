@@ -10,13 +10,10 @@ class Counter extends Component {
     } = this.props;
     return (
       <div>
-        <div>
-          当前计数为
-          {count}
-        </div>
-        <button onClick={() => increment()}>自增</button>
-        <button onClick={() => () => decrement()}>自减</button>
-        <button onClick={() => reset()}>重置</button>
+        <div>当前计数为:{count}</div>
+        <button onClick={() => this.props.increment()}>自增</button>
+        <button onClick={() => this.props.decrement()}>自减</button>
+        <button onClick={() => this.props.reset()}>重置</button>
       </div>
     );
   }
@@ -24,7 +21,7 @@ class Counter extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    counter: state.counter,
+    counter: state.couter,
   };
 };
 

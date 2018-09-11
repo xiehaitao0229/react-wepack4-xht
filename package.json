@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "precommit": "npm run lint",
-    "dev": "npm run fix && cross-env webpack-dev-server --mode development",
+    "dev": "cross-env webpack-dev-server --mode development",
     "build": "npm run lint && cross-env npm run clean && webpack --mode production",
     "clean": "cross-env rm -rf dist && mkdir dist",
     "test": "mocha --compilers js:babel-register --require ./test/test_helper.js --recursive",
