@@ -15,8 +15,8 @@ if (pro) {
             chunks: ['vendor', 'index', 'utils']  //  引入需要的chunk
         }),
         // 拆分后会把css文件放到dist目录下的css/style.css
-        new ExtractTextWebpackPlugin('css/style.[hash].css'),
-        new ExtractTextWebpackPlugin('css/reset.[hash].css'),
+        new ExtractTextWebpackPlugin('css/style.[chunkhash].css'),
+        new ExtractTextWebpackPlugin('css/reset.[chunkhash].css'),
         new CleanWebpackPlugin('dist'),
     )
 } else {
@@ -40,8 +40,9 @@ module.exports = {
         index2: './src/index2.js',
     },    // 入口文件
     output: {
-        filename: pro ? '[name].[hash].js' : '[name].js',      // 打包后的文件名称
-        path: path.resolve('dist')  // 打包后的目录，必须是绝对路径
+        filename: pro ? '[name].[chunkhash].js' : '[name].js',      // 打包后的文件名称
+        path: path.resolve('dist'),  // 打包后的目录，必须是绝对路径
+        publicPath: "/"
     },
     module: {
         rules: [
@@ -106,17 +107,11 @@ module.exports = {
     },
     plugins: plu,
     devServer: {
-        host: 'localhost',      // 默认是localhost
         port: 3000,             // 端口
         open: true,             // 自动打开浏览器
         hot: true,               // 开启热更新
-        proxy: {
-          '/api': {
-            target: 'http://localhost:3000/mock',
-            secure: false,
-            changeOrigin: true,
-          }
-        }
+        overlay: true, // 浏览器页面上显示错误
+        historyApiFallback: true
     },
     resolve: {
         // 别名
@@ -149,5 +144,5 @@ module.exports = {
             }
         }
     },
-    devtool: pro ? '' : 'cheap-module-eval-source-map'
+    devtool: pro ? '' : 'inline-source-map'
 }

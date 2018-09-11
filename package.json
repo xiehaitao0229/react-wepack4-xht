@@ -67,6 +67,7 @@
     "yargs-parser": "^10.1.0"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "cross-env": "^5.2.0",
     "lodash": "^4.17.10",
     "path": "^0.12.7",

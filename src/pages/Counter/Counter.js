@@ -11,7 +11,6 @@ class Counter extends Component {
       decrement,
       reset,
     } = this.props;
-    console.log(this.props);
     return (
       <div>
         <div>

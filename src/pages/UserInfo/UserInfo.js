@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getUserInfo as _getUserInfo } from 'actions/userInfo';
+import { getUserInfo } from 'actions/userInfo';
 
 class UserInfo extends Component {
   render() {
@@ -33,5 +33,5 @@ class UserInfo extends Component {
 
 export default connect(
   state => ({ userInfo: state.userInfo }),
-  { _getUserInfo }
+  { getUserInfo }
 )(UserInfo);

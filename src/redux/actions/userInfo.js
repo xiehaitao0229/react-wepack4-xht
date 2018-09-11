@@ -25,7 +25,7 @@ export function getUserInfo() {
   return function (dispatch) {
     dispatch(getUserInfoRequest());
 
-    return fetch('http://localhost:3000/mock/user.json')
+    return fetch('/api/user.json')
       .then((response) => {
         return response.json();
       })
