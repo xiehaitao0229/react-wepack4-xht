@@ -1,4 +1,5 @@
 # react-wepack4-cli-xht
+简书地址:https://www.jianshu.com/p/91a4214b913b
 ##  使用脚手架
 `git clone git@github.com:xiehaitao0229/react-wepack4-xht.git`
 `cd react-webpack4-xht`
