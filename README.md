@@ -3,13 +3,13 @@
 `git clone git@github.com:xiehaitao0229/react-wepack4-xht.git`
 `cd react-webpack4-xht`
 ```
-`npm run dev`  //  启动本地
-`npm run build`  //  打包线上环境
-`npm run clean` //  清除线上环境打包出来的文件
-`npm run test` //  单元测试的工具库
-`npm run fix` //  修复eslint的写法
-`npm run format` //  格式化代码
-`npm run precommit` //  commit 代码到git仓库的检查
+npm run dev  //  启动本地
+npm run build  //  打包线上环境
+npm run clean //  清除线上环境打包出来的文件
+npm run test //  单元测试的工具库
+npm run fix //  修复eslint的写法
+npm run format //  格式化代码
+npm run precommit //  commit 代码到git仓库的检查
 ```
 
 webpack今年推出的4这个版本就一直关注很学习它，webpack4这个版本借鉴了parcel的零配置，打包速度变得更快，值得大家去跟进学习。
