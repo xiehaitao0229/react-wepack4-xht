@@ -505,3 +505,889 @@ optimization: {
         }),
 ```
 ![image.png](https://upload-images.jianshu.io/upload_images/6264932-b6fd0e75361599f6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+##   webpack-dev-server
+简单来说，webpack-dev-server就是一个小型的静态文件服务器。使用它，可以为webpack打包生成的资源文件提供Web服务。
+```
+npm install webpack-dev-server --save-dev
+npm install webpack-dev-server -g
+```
+```
+ devServer: {
+        port: 3000,             // 端口
+        open: true,             // 自动打开浏览器
+        hot: true,               // 开启热更新
+        overlay: true, // 浏览器页面上显示错误
+        historyApiFallback: true
+    },
+```
+## devtool优化
+现在我们发现一个问题，代码哪里写错了，浏览器报错只报在build.js第几行。这让我们排查错误无从下手，[传送门](https://doc.webpack-china.org/configuration/devtool)。
+在开发环境下配置
+```
+devtool: 'inline-source-map'
+```
+同时，我们在srouce里面能看到我们写的代码，也能打断点调试代码
+
+##  热更新和自动刷新的区别
+在配置devServer的时候，如果hot为true，就代表开启了热更新，但是这并没有那么简单，因为热更新还需要配置一个webpack自带的插件并且还要在主要js文件里检查是否有module.hot
+```
+// webpack.config.js
+let webpack = require('webpack');
+module.exports = {
+    plugins: [
+        // 热更新，热更新不是刷新
+        new webpack.HotModuleReplacementPlugin()
+    ],
+    devServer: {
+        hot: true,  //  加上这一行
+    }
+}
+
+//  在入口文件index.js
+// 还需要在主要的js文件里写入下面这段代码
+if (module.hot) {
+  // 实现热更新
+  module.hot.accept();
+}
+```
+热更新的好处在开发vue或者react的时候，其中某个组件修改的时候就会针对这个组件进行更新，超级好用，提升开发效率
+
+##  集成react-router
+```
+`npm install --save react-router-dom`
+```
+新建router文件夹和组件
+```
+`cd src`
+`mkdir router && touch router/router.js`
+```
+按照`react-router`[文档](http://reacttraining.cn/web/guides/quick-start)编辑一个最基本的`router.js`。包含两个页面`home`和`page1`。
+`  src/router/router.js`
+```
+import React from 'react';
+
+import {BrowserRouter as Router, Route, Switch, Link} from 'react-router-dom';
+
+import Home from '../pages/Home/Home';
+import Page1 from '../pages/Page1/Page1';
+
+
+const getRouter = () => (
+    <Router>
+        <div>
+            <ul>
+                <li><Link to="/">首页</Link></li>
+                <li><Link to="/page1">Page1</Link></li>
+            </ul>
+            <Switch>
+                <Route exact path="/" component={Home}/>
+                <Route path="/page1" component={Page1}/>
+            </Switch>
+        </div>
+    </Router>
+);
+export default getRouter;
+```
+新建页面文件夹
+```
+cd src
+mkdir pages
+```
+新建两个页面 Home,Page1
+```
+cd src/pages
+mkdir Home && touch Home/Home.js
+mkdir Page1 && touch Page1/Page1.js
+```
+`src/pages/Home/Home.js`
+```
+import React, {Component} from 'react';
+
+export default class Home extends Component {
+    render() {
+        return (
+            <div>
+                this is home ~hi xht
+            </div>
+        )
+    }
+}
+```
+`Page1.js`
+```
+import React, {Component} from 'react';
+
+export default class Page1 extends Component {
+    render() {
+        return (
+            <div>
+                this is Page1~hi xht
+            </div>
+        )
+    }
+}
+```
+现在路由和页面建好了，我们在入口文件src/index.js引用Router。
+修改`src/index.js`
+```
+import React from 'react';
+import ReactDom from 'react-dom';
+
+import getRouter from './router/router';
+
+ReactDom.render(
+    getRouter(), document.getElementById('root'));
+```
+现在执行打包命令npm run dev。打开index.html查看效果啦！
+
+##  集成react-redux
+接下来，我们就要就要就要集成redux了。
+要对`redux`有一个大概的认识，可以阅读阮一峰前辈的[Redux 入门教程（一）：基本用法](http://www.ruanyifeng.com/blog/2016/09/redux_tutorial_part_one_basic_usages.html)
+
+如果要对`redux`有一个非常详细的认识，我推荐阅读[中文文档](http://cn.redux.js.org/index.html)，写的非常好。读了这个教程，有一个非常深刻的感觉，`redux`并没有任何魔法。
+我们就做一个最简单的计数器。自增，自减，重置。
+先安装redux 
+```
+`npm install --save redux`
+```
+初始化目录结构
+```
+cd src
+mkdir redux
+cd redux
+mkdir actions
+mkdir reducers
+touch reducers.js
+touch store.js
+touch actions/couter.js
+touch reducers/couter.js
+```
+先来写action创建函数。通过action创建函数，可以创建action
+`src/redux/actions/counter.js`
+```
+/*action*/
+
+export const INCREMENT = "INCREMENT";
+export const DECREMENT = "DECREMENT";
+export const RESET = "RESET";
+
+export function increment() {
+    return {type: INCREMENT}
+}
+
+export function decrement() {
+    return {type: DECREMENT}
+}
+
+export function reset() {
+    return {type: RESET}
+}
+```
+再来写reducer,reducer是一个纯函数，接收action和旧的state,生成新的state.
+`src/redux/reducers/couter.js`
+```
+import { INCREMENT, DECREMENT, RESET } from '../actions/couters';
+
+/*
+* 初始化state
+*/
+const initState = {
+  count: 0,
+};
+
+/*
+* reducer
+*/
+export default function reducer(state = initState, action) {
+  switch (action.type) {
+    case INCREMENT:
+      return {
+        count: state.count + 1,
+      };
+    case DECREMENT:
+      return {
+        count: state.count - 1,
+      };
+    case RESET:
+      return { count: 0 };
+    default:
+      return state;
+  }
+}
+```
+一个项目有很多的reducers,我们要把他们整合到一起
+`src/redux/reducers.js`
+```
+import counter from './reducers/couter';
+
+export default function combineReducers(state = {}, action) {
+    return {
+        counter: counter(state.counter, action)
+    }
+}
+```
+reducer就是纯函数，接收state 和 action，然后返回一个新的 state。
+看上面的代码，无论是combineReducers函数也好，还是reducer函数也好，都是接收state和action，
+返回更新后的state。区别就是combineReducers函数是处理整棵树，reducer函数是处理树的某一点。
+接下来，我们要创建一个store。
+
+前面我们可以使用 action 来描述“发生了什么”，使用action创建函数来返回action。
+
+还可以使用 reducers 来根据 action 更新 state 。
+
+那我们如何提交action？提交的时候，怎么才能触发reducers呢？
+
+store 就是把它们联系到一起的对象。store 有以下职责：
+
+维持应用的 state；
+> * 提供 getState() 方法获取 state；
+> * 提供 dispatch(action) 触发reducers方法更新 state；
+> * 通过subscribe(listener) 注册监听器;
+> * 通过 subscribe(listener) 返回的函数注销监听器。
+
+`src/redux/store.js`
+```
+import {createStore} from 'redux';
+import combineReducers from './reducers.js';
+let store = createStore(combineReducers);
+export default store;
+```
+写一个Counter页面
+```
+cd src/pages
+mkdir Counter
+touch Counter/Counter.js
+```
+`src/pages/Counter/Counter.js`
+```
+import React, {Component} from 'react';
+
+export default class Counter extends Component {
+    render() {
+        return (
+            <div>
+                <div>当前计数为(显示redux计数)</div>
+                <button onClick={() => {
+                    console.log('调用自增函数');
+                }}>自增
+                </button>
+                <button onClick={() => {
+                    console.log('调用自减函数');
+                }}>自减
+                </button>
+                <button onClick={() => {
+                    console.log('调用重置函数');
+                }}>重置
+                </button>
+            </div>
+        )
+    }
+}
+```
+修改路由，增加Counter
+`src/router/router.js`
+```
+import React from 'react';
+import { HashRouter as Router, Route, Switch, Link } from 'react-router-dom';
+
+import Home from 'pages/Home/Home';
+import Page1 from 'pages/Page1/Page1';
+import Counter from 'pages/Counter/Counter';
+
+const getRouter = () => (
+  <Router>
+    <div>
+      <ul>
+        <li>
+          <Link to="/">首页</Link>
+        </li>
+        <li>
+          <Link to="/page1">Page1</Link>
+        </li>
+        <li>
+          <Link to="/couter">Counter</Link>
+        </li>
+      </ul>
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route path="/page1" component={Page1} />
+        <Route path="/couter" component={Counter} />
+      </Switch>
+    </div>
+  </Router>
+);
+
+export default getRouter;
+```
+npm run dev 看看效果。
+下一步，我们让Counter组件和`react-redux`联合起来。使Counter能获得到Redux的state，并且能发射action。
+先来安装react-redux
+```
+npm install --save react-redux
+```
+`src/pages/Counter/Counter.js`
+```
+import React, { Component } from 'react';
+import { increment, decrement, reset } from 'actions/couters';
+
+import { connect } from 'react-redux';
+
+class Counter extends Component {
+  render() {
+    const {
+      counter: { count },
+      increment,
+      decrement,
+      reset,
+    } = this.props;
+    return (
+      <div>
+        <div>
+          当前计数为:
+          {count}
+        </div>
+        <button onClick={() => increment()}>自增</button>
+        <button onClick={() => decrement()}>自减</button>
+        <button onClick={() => reset()}>重置</button>
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    counter: state.couter,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    increment: () => {
+      dispatch(increment());
+    },
+    decrement: () => {
+      dispatch(decrement());
+    },
+    reset: () => {
+      dispatch(reset());
+    },
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Counter);
+```
+下面我们要传入store
+>所有容器组件都可以访问 Redux store，所以可以手动监听它。一种方式是把它以 props 的形式传入到所有容器组件中。但这太麻烦了，因为必须要用 store 把展示组件包裹一层，仅仅是因为恰好在组件树中渲染了一个容器组件。
+
+>建议的方式是使用指定的 React Redux 组件 来 让所有容器组件都可以访问 store，而不必显示地传递它。只需要在渲染根组件时使用即可。
+
+`src/index.js`
+```
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './css/index';
+import { Provider } from 'react-redux';
+import getRouter from './router/router';
+import store from './redux/store';
+
+const router = getRouter();
+
+/* 初始化 */
+renderWithHotReload(router);
+
+function renderWithHotReload(RootElement) {
+  ReactDOM.render(
+    <Provider store={store}>{RootElement}</Provider>,
+    document.getElementById('root')
+  );
+}
+
+// 还需要在主要的js文件里写入下面这段代码
+if (module.hot) {
+  // 实现热更新
+  module.hot.accept();
+}
+```
+我们在说清楚一下
+1.`Provider`组件是让所有的组件可以访问到store。不用手动去传。也不用手动去监听。
+2.`connect`函数作用是从 Redux state 树中读取部分数据，并通过 props 来把这些数据提供给要渲染的组件。也传递dispatch(action)函数到props。
+##  引入异步action,集成redux-thunk
+下面，我们以向后台请求用户基本信息为例。
+1.我们先创建一个user.json，等会请求用，相当于后台的API接口。
+```
+在根目录
+mkdir api
+cd api
+touch user.json
+```
+`user.json`
+```
+{
+  "name": "xiehaitao",
+  "intro": "please give me a star"
+}
+```
+2.创建必须的action创建函数。
+```
+cd src/redux/actions
+touch userInfo.js
+```
+`src/redux/actions/userInfo.js`
+```
+export const GET_USER_INFO_REQUEST = "GET_USER_INFO_REQUEST";
+export const GET_USER_INFO_SUCCESS = "GET_USER_INFO_SUCCESS";
+export const GET_USER_INFO_FAIL = "GET_USER_INFO_FAIL";
+
+function getUserInfoRequest() {
+    return {
+        type: GET_USER_INFO_REQUEST
+    }
+}
+
+function getUserInfoSuccess(userInfo) {
+    return {
+        type: GET_USER_INFO_SUCCESS,
+        userInfo: userInfo
+    }
+}
+
+function getUserInfoFail() {
+    return {
+        type: GET_USER_INFO_FAIL
+    }
+}
+```
+我们创建了请求中，请求成功，请求失败三个action创建函数。
+3.创建reducer
+```
+cd src/redux/reducers
+touch userInfo.js
+```
+`src/redux/reducers/userInfo.js`
+```
+import { GET_USER_INFO_REQUEST, GET_USER_INFO_SUCCESS, GET_USER_INFO_FAIL } from 'actions/userInfo';
+
+const initState = {
+  isLoading: false,
+  userInfo: {},
+  errorMsg: '',
+};
+
+export default function reducer(state = initState, action) {
+  switch (action.type) {
+    case GET_USER_INFO_REQUEST:
+      return {
+        ...state,
+        isLoading: true,
+        userInfo: {},
+        errorMsg: '',
+      };
+    case GET_USER_INFO_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        userInfo: action.userInfo,
+        errorMsg: '',
+      };
+    case GET_USER_INFO_FAIL:
+      return {
+        ...state,
+        isLoading: false,
+        userInfo: {},
+        errorMsg: '请求错误',
+      };
+    default:
+      return state;
+  }
+}
+```
+组合reducer
+`src/redux/reducers.js`
+```
+import counter from 'reducers/counter';
+import userInfo from 'reducers/userInfo';
+
+export default function combineReducers(state = {}, action) {
+    return {
+        couter: couter(state.couter, action),
+        userInfo: userInfo(state.userInfo, action)
+    }
+}
+```
+4.现在有了action，有了reducer，我们就需要调用把action里面的三个action函数和网络请求结合起来。
+`src/redux/actions/userInfo.js增加`
+```
+export function getUserInfo() {
+  return function (dispatch) {
+    dispatch(getUserInfoRequest());
+
+    return fetch('/api/user.json')
+      .then((response) => {
+        return response.json();
+      })
+      .then((json) => {
+        dispatch(getUserInfoSuccess(json));
+      })
+      .catch(() => {
+        dispatch(getUserInfoFail());
+      });
+  };
+}
+```
+我们这里发现，别的action创建函数都是返回action对象：
+但是我们现在的这个action创建函数 getUserInfo则是返回函数了。
+为了让action创建函数除了返回action对象外，还可以返回函数，我们需要引用redux-thunk。
+```
+npm install --save redux-thunk
+```
+简单的说，中间件就是action在到达reducer，先经过中间件处理。我们之前知道reducer能处理的action只有这样的{type:xxx}，所以我们使用中间件来处理
+函数形式的action，把他们转为标准的action给reducer。这是redux-thunk的作用。
+使用redux-thunk中间件
+`src/redux/store.js`
+```
+import { createStore, applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk';
+import combineReducers from './reducers';
+
+const store = createStore(combineReducers, applyMiddleware(thunkMiddleware));
+
+export default store;
+
+```
+到这里，redux-thunk已经配置完成了，写一个组件来验证一下
+```
+cd src/pages
+mkdir UserInfo
+cd UserInfo
+touch UserInfo.js
+```
+`src/pages/UserInfo/UserInfo.js`
+```
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { getUserInfo } from 'actions/userInfo';
+
+class UserInfo extends Component {
+  render() {
+    const {
+      userInfo: { userInfo, isLoading, errorMsg },
+      getUserInfo,
+    } = this.props;
+    return (
+      <div>
+        {isLoading
+          ? '请求信息中......'
+          : errorMsg || (
+          <div>
+            <p>用户信息：</p>
+            <p>
+                  用户名：
+              {userInfo.name}
+            </p>
+            <p>
+                  介绍：
+              {userInfo.intro}
+            </p>
+          </div>
+          )}
+        <button onClick={() => getUserInfo()}>请求用户信息</button>
+      </div>
+    );
+  }
+}
+
+export default connect(
+  state => ({ userInfo: state.userInfo }),
+  { getUserInfo }
+)(UserInfo);
+
+```
+增加路由
+`src/router/router.js`
+```
+import React from 'react';
+import { HashRouter as Router, Route, Switch, Link } from 'react-router-dom';
+
+import Home from 'pages/Home/Home';
+import Page1 from 'pages/Page1/Page1';
+import Counter from 'pages/Counter/Counter';
+import UserInfo from 'pages/UserInfo/UserInfo';
+
+const getRouter = () => (
+  <Router>
+    <div>
+      <ul>
+        <li>
+          <Link to="/">首页</Link>
+        </li>
+        <li>
+          <Link to="/page1">Page1</Link>
+        </li>
+        <li>
+          <Link to="/couter">Counter</Link>
+        </li>
+        <li>
+          <Link to="/userinfo">UserInfo</Link>
+        </li>
+      </ul>
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route path="/page1" component={Page1} />
+        <Route path="/couter" component={Counter} />
+        <Route path="/userinfo" component={UserInfo} />
+      </Switch>
+    </div>
+  </Router>
+);
+
+export default getRouter;
+
+```
+![image.png](https://upload-images.jianshu.io/upload_images/6264932-7bd7fdda29d5c564.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+## combinReducers优化
+redux提供了一个combineReducers函数来合并reducer，不用自己合并
+`src/redux/reducers.js`
+```
+import { combineReducers } from 'redux';
+import userInfo from 'reducers/userInfo';
+import couter from './reducers/couters';
+
+export default combineReducers({
+  couter,
+  userInfo,
+});
+
+```
+
+##  指定环境
+在webpack4之前都是需要建三个文件来需要环境的，webpack.base.js,webpack.dev.js,webpack.prod.js,现在在webpack4之后就不需要了，因为用--mode  就可以区分环境了
+先安装  
+```
+npm install -D yargs-parser
+```
+```
+这个包可以拿到--mode 里面的参数，这样子就可以区别是本地环境还是线上环境了
+    "dev": "cross-env webpack-dev-server --mode development",
+    "build": "npm run lint && cross-env npm run clean && webpack --mode production",
+```
+```
+//  webpack.config.js
+const argv = require('yargs-parser')(process.argv.slice(2));
+const pro = argv.mode == 'production' ? true : false;  //  区别是生产环境和开发环境
+
+let plu = [];
+if (pro) {
+    //  线上环境
+    plu.push(
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            hash: true, // 会在打包好的bundle.js后面加上hash串
+            chunks: ['vendor', 'index', 'utils']  //  引入需要的chunk
+        }),
+        // 拆分后会把css文件放到dist目录下的css/style.css
+        new ExtractTextWebpackPlugin('css/style.[chunkhash].css'),
+        new ExtractTextWebpackPlugin('css/reset.[chunkhash].css'),
+        new CleanWebpackPlugin('dist'),
+    )
+} else {
+    //  开发环境
+    plu.push(
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['vendor', 'index', 'utils']  //  引入需要的chunk
+        }),
+        // 拆分后会把css文件放到dist目录下的css/style.css
+        new ExtractTextWebpackPlugin('css/style.css'),
+        new ExtractTextWebpackPlugin('css/reset.css'),
+        new webpack.HotModuleReplacementPlugin(),  // 热更新，热更新不是刷新
+    )
+}
+
+devtool: pro ? '' : 'inline-source-map'  //  只有本地开发才需要调试
+
+```
+
+##  集成eslint
+eslint目标是以可扩展，每条规则独立，不内置编码风格为理念的lint工具，用户可以定制自己的规则做成公共包
+
+eslint主要有以下特点：
+
+1）默认规则包含所有的jslint，jshint中存在的规则易迁移
+
+2）规则可配置性高，可设置警告，错误两个error等级，也可以直接禁用
+
+3）包含代码风格检测的规则
+
+4）支持插件扩展，自定义规则
+
+针对react开发者，eslint已经可以很好的支持jsx语法了。
+先安装插件
+```
+npm install -D eslint eslint-config-airbnb eslint-loader  eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react
+```
+配置.eslintrc文件
+```
+// 直接继承airbnb的配置规则，同时也可以写入自己的特定规则，后面的内容会覆盖默认的规则，
+//  下面是我比较习惯的lint规则
+{
+  "extends": ["airbnb"],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true,
+    "mocha": true,
+    "jest": true,
+    "jasmine": true
+  },
+  "rules": {
+    "no-plusplus": [0],
+    "eqeqeq": [0],
+    "no-empty": [0],
+    "no-param-reassign": [0],
+    "generator-star-spacing": [0],
+    "consistent-return": [0],
+    "no-shadow": [0],
+    "react/forbid-prop-types": [0],
+    "react/jsx-filename-extension": [
+      1,
+      {
+        "extensions": [".js"]
+      }
+    ],
+    "react/button-has-type": [
+      "<enabled>",
+      {
+        "button": false,
+        "submit": false,
+        "reset": false
+      }
+    ],
+    "global-require": [1],
+    "import/prefer-default-export": [0],
+    "react/jsx-boolean-value": [0],
+    "react/jsx-no-bind": [0],
+    "react/prop-types": [0],
+    "react/prefer-stateless-function": [0],
+    "react/jsx-one-expression-per-line": [0],
+    "react/jsx-wrap-multilines": [
+      "error",
+      {
+        "no-empty": [0],
+        "no-param-reassign": [0],
+        "declaration": "parens-new-line",
+        "assignment": "parens-new-line",
+        "return": "parens-new-line",
+        "arrow": "parens-new-line",
+        "condition": "parens-new-line",
+        "logical": "parens-new-line",
+        "prop": "ignore"
+      }
+    ],
+    "no-else-return": [0],
+    "no-restricted-syntax": [0],
+    "import/no-extraneous-dependencies": [0],
+    "no-use-before-define": [0],
+    "jsx-a11y/no-static-element-interactions": [0],
+    "jsx-a11y/no-noninteractive-element-interactions": [0],
+    "jsx-a11y/click-events-have-key-events": [0],
+    "jsx-a11y/anchor-is-valid": [0],
+    "no-nested-ternary": [0],
+    "arrow-body-style": [0],
+    "import/extensions": [0],
+    "no-bitwise": [0],
+    "no-cond-assign": [0],
+    "import/no-unresolved": [0],
+    "comma-dangle": [
+      "error",
+      {
+        "arrays": "always-multiline",
+        "objects": "always-multiline",
+        "imports": "always-multiline",
+        "exports": "always-multiline",
+        "functions": "ignore"
+      }
+    ],
+    "object-curly-newline": [0],
+    "function-paren-newline": [0],
+    "no-restricted-globals": [0],
+    "require-yield": [1]
+  },
+  "globals": {
+    "document": true,
+    "localStorage": true,
+    "window": true
+  }
+}
+
+```
+除此之外还要在webpack.config.js文件增加module的loader
+```
+module: {
+        rules: [
+            {
+                enforce: "pre",  //  代表在解析loader之前就先解析eslint-loader
+                test: /\.js$/,
+                exclude: /node_modules/,
+                include:/src/,
+                loader: "eslint-loader",
+              },
+          ]
+}
+```
+在`pagekage.json`文件里面script增加
+```
+    "lint": "npm run format && npm run fix &&  eslint --ext .js src",  //  检测你写的代码是否符合eslint的规则
+    "fix": "npm run format && eslint --fix --ext .js src",  //  npm run fix 这个是可以修复你没有按照lint规则的写法
+```
+## 自动格式化以及提交代码时的优化配置
+###第一步 格式化所有代码 prettier
+```
+npm install -D prettier
+```
+在package.json的script里面添加如下配置
+```
+{
+  "scripts": {
+    "format": "prettier --single-quote --trailing-comma es5 --write \"src/**/*.js\""
+  }
+}
+```
+你可以通过 npm run format试一下是否可以自动格式化你的代码
+第二步 配置Eslint
+上面我们已经配置好eslint了在package.json的scripts里添加如下
+```
+"fix": "npm run format && eslint --fix --ext .js src",
+```
+第三步 添加Git钩子(Pre-commit Hook)
+>Git 钩子(hooks)是在Git 仓库中特定事件(certain points)触发后被调用的脚本。 详情可浏览 [https://git-scm.com/book/zh/v2/自定义-Git-Git-钩子](https://link.zhihu.com/?target=https%3A//git-scm.com/book/zh/v2/%25E8%2587%25AA%25E5%25AE%259A%25E4%25B9%2589-Git-Git-%25E9%2592%25A9%25E5%25AD%2590)
+每次提交代码，执行 `git commit`之后进行自动格式化，免去每次人为手动格式化，使远程仓库代码保持风格统一。
+```
+npm install -D lint-staged husky 
+```
+在package.json的scripts里添加如下
+```
+   "precommit": "npm run lint",
+```
+现在让我们来看看在package.json的scripts的所有配置吧
+```
+  "scripts": {
+    "dev": "cross-env webpack-dev-server --mode development",
+    "build": "npm run lint && cross-env npm run clean && webpack --mode production",
+    "precommit": "npm run lint",
+    "clean": "cross-env rm -rf dist && mkdir dist",
+    "test": "mocha --compilers js:babel-register --require ./test/test_helper.js --recursive",
+    "test:watch": "npm run test --watch",
+    "lint": "npm run format && npm run fix &&  eslint --ext .js src",
+    "fix": "npm run format && eslint --fix --ext .js src",
+    "format": "prettier --single-quote --trailing-comma es5 --write \"src/**/*.js\""
+  },
+```
+
+
+
+
+
