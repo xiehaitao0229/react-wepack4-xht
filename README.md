@@ -1,4 +1,5 @@
 # react-wepack4-cli-xht
+掘金地址:https://juejin.im/post/5b98ac085188255c5d567c68#heading-13
 简书地址:https://www.jianshu.com/p/91a4214b913b
 ##  使用脚手架
 `git clone git@github.com:xiehaitao0229/react-wepack4-xht.git`
